@@ -1,13 +1,16 @@
-import { Server, ServerResponse } from "http";
+import { Server, ServerResponse, createServer as createHttpServer } from "http";
+import { createServer as createHttpsServer } from "https";
 import bodyParser from "body-parser";
 import express, { ErrorRequestHandler, RequestHandler, Response } from "express";
 import morgan from "morgan";
 import { logger } from "../logger";
 import { cleanupBody } from "../utils";
 import { RequestExt } from "./request-ext";
-
+import { readFileSync } from "fs";
+import path from "path";
 export interface MockApiServerConfig {
   port: number;
+  isHttps?: boolean;
 }
 
 const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
@@ -53,7 +56,18 @@ export class MockApiServer {
   public start(): void {
     this.app.use(errorHandler);
 
-    const server = this.app.listen(this.config.port, () => {
+    let server: Server;
+    this.config.isHttps = true;
+    if (this.config.isHttps) {
+      const privateKey = readFileSync(path.join(__dirname, "server.key"), "utf8");
+      const certificate = readFileSync(path.join(__dirname, "server.cert"), "utf8");
+      const credentials = { key: privateKey, cert: certificate };
+      server = createHttpsServer(credentials, this.app);
+    } else {
+      server = createHttpServer(this.app);
+    }
+
+    server.listen(this.config.port, () => {
       logger.info(`Started server on ${getAddress(server)}`);
     });
   }
