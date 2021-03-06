@@ -15,7 +15,7 @@ export class ApiMockApp {
 
   constructor(private config: ApiMockAppConfig) {
     coverageService.coverageDirectory = config.coverageDirectory;
-    this.server = new MockApiServer({ port: config.port });
+    this.server = new MockApiServer({ port: config.port, useHttps: config.useHttps });
   }
 
   public async start(): Promise<void> {

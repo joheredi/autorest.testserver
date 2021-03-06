@@ -24,6 +24,11 @@ export const parseArgs = (argv: string[]): CliConfig => {
       type: "string",
       description: "Run with given logging level.",
     })
+    .option("useHttps", {
+      type: "boolean",
+      description: "Whether or not to use https",
+      default: false,
+    })
     .option("port", {
       alias: "p",
       type: "number",

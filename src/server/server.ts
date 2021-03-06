@@ -10,7 +10,7 @@ import { readFileSync } from "fs";
 import path from "path";
 export interface MockApiServerConfig {
   port: number;
-  isHttps?: boolean;
+  useHttps?: boolean;
 }
 
 const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
@@ -57,13 +57,14 @@ export class MockApiServer {
     this.app.use(errorHandler);
 
     let server: Server;
-    this.config.isHttps = true;
-    if (this.config.isHttps) {
+    if (this.config.useHttps) {
+      logger.info("starting https server");
       const privateKey = readFileSync(path.join(__dirname, "server.key"), "utf8");
       const certificate = readFileSync(path.join(__dirname, "server.cert"), "utf8");
       const credentials = { key: privateKey, cert: certificate };
       server = createHttpsServer(credentials, this.app);
     } else {
+      logger.info("starting http server");
       server = createHttpServer(this.app);
     }
 
