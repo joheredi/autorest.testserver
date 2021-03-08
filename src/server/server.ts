@@ -59,8 +59,8 @@ export class MockApiServer {
     let server: Server;
     if (this.config.useHttps) {
       logger.info("starting https server");
-      const privateKey = readFileSync(path.join(__dirname, "server.key"), "utf8");
-      const certificate = readFileSync(path.join(__dirname, "server.cert"), "utf8");
+      const privateKey = readFileSync(path.join(__dirname, "key.pem"), "utf8");
+      const certificate = readFileSync(path.join(__dirname, "cert.pem"), "utf8");
       const credentials = { key: privateKey, cert: certificate };
       server = createHttpsServer(credentials, this.app);
     } else {
